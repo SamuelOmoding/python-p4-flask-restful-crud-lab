@@ -48,19 +48,25 @@ class PlantByID(Resource):
         if plant is None:
             abort(404)
         return make_response(jsonify(plant.to_dict()), 200)
+   
+   
     def patch(self, id):
-        plant = Plant.query.get_or_404(id)
         data = request.get_json()
+        if not data or 'is_in_stock' not in data:
+            return make_response(jsonify({"error": "Missing required data"}), 400)
 
-        if 'is_in_stock' in data:
-            plant.is_in_stock = data['is_in_stock']
+        plant = db.session.get(Plant, id)
+        if plant is None:
+            return make_response(jsonify({"error": "Plant not found"}), 404)
 
+        plant.is_in_stock = data['is_in_stock']
         db.session.commit()
-
         return make_response(jsonify(plant.to_dict()), 200)
 
     def delete(self, id):
-        plant = Plant.query.get_or_404(id)
+        plant = db.session.get(Plant, id)
+        if plant is None:
+            return make_response(jsonify({"error": "Plant not found"}), 404)
 
         db.session.delete(plant)
         db.session.commit()

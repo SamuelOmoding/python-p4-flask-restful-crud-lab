@@ -1,7 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.orm import Session
-from flask import abort
 
 db = SQLAlchemy()
 
@@ -17,9 +16,4 @@ class Plant(db.Model, SerializerMixin):
     def __repr__(self):
         return f'<Plant {self.name} | In Stock: {self.is_in_stock}>'
     
-    @classmethod
-    def get_or_404(cls, id):
-        plant = db.session.query(cls).get(id)
-        if plant is None:
-            abort(404)
-        return plant
+  
